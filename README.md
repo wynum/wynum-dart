@@ -19,7 +19,7 @@ final client = Client.create(secret: secret, token: token)
 ## Get schema
 call ```getSchema``` on ```Client``` to get the keys and types for the data. This will return a ```List``` of ```Schema``` objects.  ```Schema.key``` will return the key and ```Schema.type``` will return the Wynum type. Following is the mapping from Wynum type to dart type.
 
-| Wynum type            | Python type              |
+| Wynum type            | Dart type              |
 | --------------------- | ------------------------ |
 | Text                  | ```String```                |
 | Date                  | ```String``` (dd/mm/yyyy)   |
@@ -56,7 +56,7 @@ final data = await client.getData()
 ## Updating data
 The ```update``` method is same as that of ```postData``` method.
 ```dart
-await client.getschema()
+await client.getSchema()
 String identifierKey = client.identifier
 Map data = {'key1':val1, 'key2':val2, identifierKey:'id_string'}
 final res = await client.update(data)
