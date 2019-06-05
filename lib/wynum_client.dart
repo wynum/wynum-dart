@@ -6,6 +6,8 @@ import 'package:meta/meta.dart';
 import 'package:dio/dio.dart';
 import 'package:path/path.dart';
 
+import 'package:wynum_client/schema.dart';
+
 /// Wynum Client.
 class Client {
   final String _secret;
@@ -16,7 +18,7 @@ class Client {
   final String _baseSchmaUrl = "https://api.wynum.com/component";
   final String _baseDataUrl = "https://api.wynum.com/data";
 
-  String _schmaUrl, _dataUrl;
+  String _schmaUrl, _dataUrl, identifier;
 
   Client._(this._secret, this._token) {
     this._schmaUrl = "$_baseSchmaUrl/$_token";
@@ -26,10 +28,14 @@ class Client {
   factory Client.create({@required secret, @required token}) =>
       Client._(secret, token);
 
-  Future<Map<String, dynamic>> getSchema() async {
+  Future<List<Schema>> getSchema() async {
     final response = await _dio.get(_schmaUrl);
     final data = response.data;
-    return data;
+    final schemaJson = data['components'] as List;
+    this.identifier = data['identifer'];
+    final schemaList = schemaJson.map((json) =>
+        Schema(json['Property'], json['Type'])).toList();
+    return schemaList;
   }
 
   Future<Map<String, dynamic>> get() async {
