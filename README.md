@@ -11,9 +11,9 @@ The ```Client``` needs Wynum credentials.You can either pass these directly to t
 ```dart
 import 'package:wynum_client/wynum_client.dart';
 
-String secret = "your_secret_key"
-String token = "project_token"
-final client = Client.create(secret: secret, token: token)
+String secret = "your_secret_key";
+String token = "project_token";
+final client = Client.create(secret: secret, token: token);
 ```
 
 ## Get schema
@@ -30,7 +30,7 @@ call ```getSchema``` on ```Client``` to get the keys and types for the data. Thi
 | File                  | ```File```               |
 
 ```dart
-final schemas = await client.getSchema()
+final schemas = await client.getSchema();
 for (var schema in schemas) {
   print(schema);
 }
@@ -40,24 +40,24 @@ for (var schema in schemas) {
 the ```postData``` method accepts a single parameter data which is a ```Map``` containing the post key:value. Every data ```Map``` should contain the 'identifier'. You can get identifier key if you have called ```getSchema```. You can retrieve it using ```client.identifier```.
 
 ```dart
-await client.getSchema()
-String identifierKey = client.identifier
-Map data = {'key1':val1, 'key2':val2, identifierKey:'id_string'}
-final res = await client.postData(data)
+await client.getSchema();
+String identifierKey = client.identifier;
+Map data = {'key1':val1, 'key2':val2, identifierKey:'id_string'};
+final res = await client.postData(data);
 ```
 If the call is successful it returns the ```Map``` containing the created data instance. If there is some error the ```Map``` will contain ```_error``` and ```_message``` keys.  You should check this to check for errors.
 
 ## Get data
 Call ```getData``` to get the data. This will return ```List``` of ```Map```
 ```dart
-final data = await client.getData()
+final data = await client.getData();
 ```
 
 ## Updating data
 The ```update``` method is same as that of ```postData``` method.
 ```dart
 await client.getSchema()
-String identifierKey = client.identifier
-Map data = {'key1':val1, 'key2':val2, identifierKey:'id_string'}
-final res = await client.update(data)
+String identifierKey = client.identifier;
+Map data = {'key1':val1, 'key2':val2, identifierKey:'id_string'};
+final res = await client.update(data);
 ```
