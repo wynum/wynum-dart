@@ -11,13 +11,13 @@ The ```Client``` needs Wynum credentials.You can either pass these directly to t
 ```dart
 import 'package:wynum_client/wynum_client.dart';
 
-secret = "your_secret_key"
-token = "project_token"
-client = Client.create(secret: secret, token: token)
+String secret = "your_secret_key"
+String token = "project_token"
+final client = Client.create(secret: secret, token: token)
 ```
 
 ## Get schema
-call ```getschema``` on ```Client``` to get the keys and types for the data. This will return a ```list``` of ```Schema``` objects.  ```Schema.key``` will return the key and ```Schema.type``` will return the Wynum type. Following is the mapping from Wynum type to dart type.
+call ```getSchema``` on ```Client``` to get the keys and types for the data. This will return a ```List``` of ```Schema``` objects.  ```Schema.key``` will return the key and ```Schema.type``` will return the Wynum type. Following is the mapping from Wynum type to dart type.
 
 | Wynum type            | Python type              |
 | --------------------- | ------------------------ |
@@ -42,7 +42,7 @@ the ```postData``` method accepts a single parameter data which is a ```Map``` c
 ```dart
 await client.getSchema()
 String identifierKey = client.identifier
-Map data = {'key1':val1, 'key2':val2, identifer_key:'id_string'}
+Map data = {'key1':val1, 'key2':val2, identifierKey:'id_string'}
 final res = await client.postData(data)
 ```
 If the call is successful it returns the ```Map``` containing the created data instance. If there is some error the ```Map``` will contain ```_error``` and ```_message``` keys.  You should check this to check for errors.
