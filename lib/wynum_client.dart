@@ -38,13 +38,13 @@ class Client {
     return schemaList;
   }
 
-  Future<Map<String, dynamic>> get() async {
+  Future<Map<String, dynamic>> getData() async {
     final response = await _dio.get(_dataUrl);
     final data = response.data;
     return data;
   }
 
-  Future<Map<String, dynamic>> post(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> postData(Map<String, dynamic> data) async {
     assert(data != null);
 
     // check for file
