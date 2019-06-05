@@ -31,7 +31,7 @@ call ```getSchema``` on ```Client``` to get the keys and types for the data. Thi
 
 ```dart
 final schemas = await client.getSchema()
-for (var schema in res) {
+for (var schema in schemas) {
   print(schema);
 }
 ```
