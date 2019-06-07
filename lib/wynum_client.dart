@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:path/path.dart';
 
 import 'package:wynum_client/schema.dart';
+import 'package:wynum_client/auth_exception.dart';
 
 /// Wynum Client.
 class Client {
@@ -21,8 +22,8 @@ class Client {
   String _schmaUrl, _dataUrl, identifier;
 
   Client._(this._secret, this._token) {
-    this._schmaUrl = "$_baseSchmaUrl/$_token";
-    this._dataUrl = "$_baseDataUrl/$_token";
+    this._schmaUrl = "$_baseSchmaUrl/$_token?secret_key=$_secret";
+    this._dataUrl = "$_baseDataUrl/$_token?secret_key=$_secret";
   }
 
   factory Client.create({@required secret, @required token}) =>
@@ -31,16 +32,31 @@ class Client {
   Future<List<Schema>> getSchema() async {
     final response = await _dio.get(_schmaUrl);
     final data = response.data;
+
+    _validateResponse(data);
+
     final schemaJson = data['components'] as List;
     this.identifier = data['identifer'];
-    final schemaList = schemaJson.map((json) =>
-        Schema(json['Property'], json['Type'])).toList();
+    final schemaList = schemaJson
+        .map((json) => Schema(json['Property'], json['Type']))
+        .toList();
     return schemaList;
   }
 
-  Future<Map<String, dynamic>> getData() async {
-    final response = await _dio.get(_dataUrl);
+  Future<List<dynamic>> getData(
+      {int limit, List<String> ids, String orderBy, int start, int to}) async {
+    Map<String, dynamic> params = {};
+
+    if (limit != null) params['limit'] = limit;
+    if (ids != null) params['ids'] = ids.join(",");
+    if (orderBy != null) params['order_by'] = orderBy.toUpperCase();
+    if (start != null) params['from'] = start;
+    if (to != null) params['to'] = to;
+
+    final response = await _dio.get(_dataUrl, queryParameters: params);
     final data = response.data;
+
+    _validateResponse(data);
     return data;
   }
 
@@ -98,5 +114,18 @@ class Client {
     final formData =
         FormData.from({'inputdata': transformedData, 'files': files});
     return formData;
+  }
+
+  void _validateResponse(dynamic data) {
+    if (data is Map) {
+      switch (data['_message']) {
+        case "Secret Key Error":
+          throw AuthException("Secret Key Error");
+        case "Not Found":
+          throw Exception("Invalid token");
+        default:
+          throw Exception(data['_message']);
+      }
+    }
   }
 }
