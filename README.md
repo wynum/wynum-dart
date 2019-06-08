@@ -48,7 +48,21 @@ final res = await client.postData(data);
 If the call is successful it returns the ```Map``` containing the created data instance. If there is some error the ```Map``` will contain ```_error``` and ```_message``` keys.  You should check this to check for errors.
 
 ## Get data
-Call ```getData``` to get the data. This will return ```List``` of ```Map```
+Call ```getData``` to get the data. This will return ```List``` of ```Map```. ```getData``` accepts following optional arguments
+- ```limit```: ```int```
+    <br>Number of records to return.
+- ```orderBy```: ```String```
+    <br> Sorting order which can either be 'asc' or desc'
+- ```ids```: ```List<String>```
+    <br> The list of ids to retrieve
+- ```start```: ```int```
+    <br> Record number to start from
+- ```to```: ```int```
+    <br> Record number to end at
+
+```start``` and `to` can be used for pagination.
+
+If no arguments are provided it will return the list of all data records.
 ```dart
 final data = await client.getData();
 ```
