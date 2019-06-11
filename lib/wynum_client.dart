@@ -26,7 +26,7 @@ class Client {
     this._dataUrl = "$_baseDataUrl/$_token?secret_key=$_secret";
   }
 
-  factory Client.create({@required secret, @required token}) =>
+  factory Client.create({@required String secret, @required String token}) =>
       Client._(secret, token);
 
   Future<List<Schema>> getSchema() async {
@@ -77,54 +77,45 @@ class Client {
     return response.data;
   }
 
-  Future<void> update(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> update(Map<String, dynamic> data) async {
     assert(data != null);
-    final response = await _dio.put(_dataUrl, data: data);
+
+    // check for file
+    final hasFile = data.keys.any((key) => data[key] is File);
+
+    Response response;
+    if (hasFile) {
+      final formData = _prepareFormDataForFile(data);
+      response = await _dio.put(_dataUrl, data: formData);
+    } else {
+      response = await _dio.put(_dataUrl, data: data);
+    }
     return response.data;
   }
 
   FormData _prepareFormDataForFile(Map<String, dynamic> data) {
-    final files = [];
-
+    final Map<String, dynamic> formData = {};
     for (var key in data.keys) {
       if (data[key] is File) {
         File file = data[key];
         var fileName = basename(file.path);
-        data[key] = fileName;
-        files.add(UploadFileInfo(file, fileName));
+        formData[key] = UploadFileInfo(file, fileName);
+      } else {
+        formData[key] = data[key];
       }
     }
-
-    var transformedData = {};
-    for (var key in data.keys) {
-      var val = data[key];
-      switch (val.runtimeType) {
-        case String:
-          transformedData['"$key"'] = '"$val"';
-          break;
-        case List:
-          val = val.map((tmp) => tmp is String ? '"$tmp"' : tmp).toList();
-          transformedData['"$key"'] = val;
-          break;
-        default:
-          transformedData['"$key"'] = val;
-      }
-    }
-
-    final formData =
-        FormData.from({'inputdata': transformedData, 'files': files});
-    return formData;
+    return FormData.from(formData);
   }
 
   void _validateResponse(dynamic data) {
     if (data is Map) {
-      switch (data['_message']) {
-        case "Secret Key Error":
-          throw AuthException("Secret Key Error");
-        case "Not Found":
-          throw Exception("Invalid token");
-        default:
-          throw Exception(data['_message']);
+      if (data.containsKey("_error")) {
+        switch (data['_message']) {
+          case "Secret Key Error":
+            throw AuthException("Secret Key Error");
+          case "Not Found":
+            throw Exception("Invalid token");
+        }
       }
     }
   }
