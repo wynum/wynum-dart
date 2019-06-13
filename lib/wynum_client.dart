@@ -71,9 +71,10 @@ class Client {
       final formData = _prepareFormDataForFile(data);
       response = await _dio.post(_dataUrl, data: formData);
     } else {
-      response = await _dio.post(_dataUrl, data: data);
+      response = await _dio.post(_dataUrl, data: FormData.from(data));
     }
 
+    _validateResponse(response.data);
     return response.data;
   }
 
@@ -88,8 +89,9 @@ class Client {
       final formData = _prepareFormDataForFile(data);
       response = await _dio.put(_dataUrl, data: formData);
     } else {
-      response = await _dio.put(_dataUrl, data: data);
+      response = await _dio.put(_dataUrl, data: FormData.from(data));
     }
+    _validateResponse(response.data);
     return response.data;
   }
 
