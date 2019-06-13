@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dio:
+  dio: 2.1.3
   path:
 
 dev_dependencies:
