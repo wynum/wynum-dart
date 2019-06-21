@@ -1,6 +1,7 @@
 library wynum_client;
 
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:meta/meta.dart';
 import 'package:dio/dio.dart';
@@ -71,7 +72,7 @@ class Client {
       final formData = _prepareFormDataForFile(data);
       response = await _dio.post(_dataUrl, data: formData);
     } else {
-      response = await _dio.post(_dataUrl, data: FormData.from(data));
+      response = await _dio.post(_dataUrl, data: data);
     }
 
     _validateResponse(response.data);
@@ -89,23 +90,23 @@ class Client {
       final formData = _prepareFormDataForFile(data);
       response = await _dio.put(_dataUrl, data: formData);
     } else {
-      response = await _dio.put(_dataUrl, data: FormData.from(data));
+      response = await _dio.put(_dataUrl, data: data);
     }
     _validateResponse(response.data);
     return response.data;
   }
 
   FormData _prepareFormDataForFile(Map<String, dynamic> data) {
-    final Map<String, dynamic> formData = {};
+    final FormData formData = FormData();
     for (var key in data.keys) {
       if (data[key] is File) {
         File file = data[key];
         var fileName = basename(file.path);
         formData[key] = UploadFileInfo(file, fileName);
-      } else {
-        formData[key] = data[key];
       }
     }
+    data.removeWhere((key, val) => val is File);
+    formData['inputdata'] = json.encode(data);
     return FormData.from(formData);
   }
 
