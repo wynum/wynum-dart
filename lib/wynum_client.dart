@@ -45,14 +45,23 @@ class Client {
   }
 
   Future<List<dynamic>> getData(
-      {int limit, List<String> ids, String orderBy, int start, int to}) async {
+      {int limit,
+      List<String> ids,
+      String orderBy,
+      int start,
+      int to,
+      Map<String, dynamic> filters}) async {
     Map<String, dynamic> params = {};
 
-    if (limit != null) params['limit'] = limit;
-    if (ids != null) params['ids'] = ids.join(",");
-    if (orderBy != null) params['order_by'] = orderBy.toUpperCase();
-    if (start != null) params['from'] = start;
-    if (to != null) params['to'] = to;
+    if (limit != null) params['_limit'] = limit;
+    if (ids != null) params['_ids'] = ids.join(",");
+    if (orderBy != null) params['_order_by'] = orderBy.toUpperCase();
+    if (start != null) params['_from'] = start;
+    if (to != null) params['_to'] = to;
+
+    if (filters != null) {
+      params.addAll(filters);
+    }
 
     final response = await _dio.get(_dataUrl, queryParameters: params);
     final data = response.data;
