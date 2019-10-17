@@ -65,8 +65,18 @@ class Client {
 
     final response = await _dio.get(_dataUrl, queryParameters: params);
     final data = response.data;
-
+    print(data);
     _validateResponse(data);
+
+    // check for error
+    if (data is Map && data.containsKey("_error")) {
+      if (data['_message'] == 'Data Not Found') {
+        return [];
+      } else {
+        throw Exception(data['_message']);
+      }
+    }
+
     return data;
   }
 
